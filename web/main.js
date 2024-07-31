@@ -1,5 +1,5 @@
 $(() => { FissionOpt().then((FissionOpt) => {
-  const run = $('#run'), pause = $('#pause'), stop = $('#stop');
+  const run = $('#run'), pause = $('#pause'), stop = $('#stop'), reset = $('#reset');
   let opt = null, timeout = null;
   
   const updateDisables = () => {
@@ -8,6 +8,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
     run[timeout === null ? 'removeClass' : 'addClass']('disabledLink');
     pause[timeout !== null ? 'removeClass' : 'addClass']('disabledLink');
     stop[opt !== null ? 'removeClass' : 'addClass']('disabledLink');
+    reset[timeout === null ? 'removeClass' : 'addClass']('disabledLink');
   };
 
   const fuelBasePower = $('#fuelBasePower');
@@ -179,15 +180,15 @@ $(() => { FissionOpt().then((FissionOpt) => {
       fuelBaseHeat.val(heat);
     });
   }
-  const applyFuelFactor = (factor) => {
+  const applyFuelFactor = (fuel, factor) => {
     if (opt !== null)
       return;
-    fuelBasePower.val(fuelBasePower.val() * factor);
-    fuelBaseHeat.val(fuelBaseHeat.val() * factor);
+    fuelBasePower.val(fuelPresets[fuel][0] * factor);
+    fuelBaseHeat.val(fuelPresets[fuel][1] * factor);
   };
-  $('#br').click(() => { applyFuelFactor(8 / 9); });
-  $('#ic2').click(() => { applyFuelFactor(18 / 19); });
-  $('#ic2mox').click(() => { applyFuelFactor(9 / 7); });
+  $('#br').click(() => { applyFuelFactor('DefLEU235', 8 / 9); });
+  $('#ic2').click(() => { applyFuelFactor('DefLEU235', 18 / 19); });
+  $('#ic2mox').click(() => { applyFuelFactor('DefMOX239', 9 / 7); });
   
   const rates = [], limits = [];
   $('#rate input').each(function() { rates.push($(this)); });
@@ -198,24 +199,30 @@ $(() => { FissionOpt().then((FissionOpt) => {
     $('#activeLimit input').each(function() { limits.push($(this)); });
     limits.push(...tail);
   }
+  const ratePreset = {
+    Def: [
+      60, 90, 90, 120, 130, 120, 150, 140, 120, 160, 80, 160, 80, 120, 110,
+      150, 3200, 3000, 4800, 4000, 2800, 7000, 6600, 5400, 6400, 2400, 3600, 2600, 3000, 3600
+    ],
+    E2E: [
+      20, 80, 80, 120, 120, 100, 120, 120, 140, 140, 60, 140, 60, 80, 100,
+      50, 1000, 1500, 1750, 2000, 2250, 3500, 3300, 2750, 3250, 1700, 2750, 1125, 1250, 2000
+    ],
+    PO3: [
+      40, 160, 160, 240, 240, 200, 240, 240, 280, 800, 120, 280, 120, 160, 200,
+      50, 1600, 20000, 4000, 2700, 3200, 3500, 3300, 2700, 3200, 1200, 1800, 1300, 1500, 1800
+    ],
+  }
   const loadRatePreset = (preset) => {
     if (opt !== null)
       return;
     $.each(rates, (i, x) => { x.val(preset[i]); });
   };
-  $('#DefRate').click(() => { loadRatePreset([
-    60, 90, 90, 120, 130, 120, 150, 140, 120, 160, 80, 160, 80, 120, 110,
-    150, 3200, 3000, 4800, 4000, 2800, 7000, 6600, 5400, 6400, 2400, 3600, 2600, 3000, 3600
-  ]); });
-  $('#E2ERate').click(() => { loadRatePreset([
-    20, 80, 80, 120, 120, 100, 120, 120, 140, 140, 60, 140, 60, 80, 100,
-    50, 1000, 1500, 1750, 2000, 2250, 3500, 3300, 2750, 3250, 1700, 2750, 1125, 1250, 2000
-  ]); });
-  $('#PO3Rate').click(() => { loadRatePreset([
-    40, 160, 160, 240, 240, 200, 240, 240, 280, 800, 120, 280, 120, 160, 200,
-    50, 1600, 20000, 4000, 2700, 3200, 3500, 3300, 2700, 3200, 1200, 1800, 1300, 1500, 1800
-  ]); });
-
+  loadRatePreset(ratePreset.Def);
+  $('#DefRate').click(() => { loadRatePreset(ratePreset.Def); });
+  $('#E2ERate').click(() => { loadRatePreset(ratePreset.E2E); });
+  $('#PO3Rate').click(() => { loadRatePreset(ratePreset.PO3); });
+  
   const schedule = () => {
     timeout = window.setTimeout(step, 0);
   };
@@ -247,7 +254,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
     const result = $('<span>' + tileNames[tile] + '</span>').addClass(tileClasses[tile]);
     if (active) {
       result.attr('title', 'Active ' + tileTitles[tile]);
-      result.css('outline', '2px dashed black')
+      result.addClass('active-cooler')
     } else {
       result.attr('title', tileTitles[tile]);
     }
@@ -449,4 +456,73 @@ $(() => { FissionOpt().then((FissionOpt) => {
     opt = null;
     updateDisables();
   });
+
+  reset.click(() => {
+    $('input').each((_, x) => {
+      if (x.type === 'text') $(x).val(x.parentNode?.parentNode?.id === 'activeLimit' && '0' || null);
+      if (x.type === 'checkbox') x.checked = true
+      if (x.type === 'radio') $(x).val(['0'])
+    });
+    loadRatePreset(ratePreset.Def);
+  })
+
+  if (typeof(Storage) !== 'undefined') {
+    window.addEventListener('beforeunload', (event) => {
+      const lsCache = {};
+      $('input').each((_, x) => {
+        if (x.type === 'text') {
+            if (x.id || x.name) {
+            localStorage[x.id || x.name] = $(x).val();
+            return;
+          }
+
+          const id = x.parentNode?.parentNode?.id;
+          if (typeof(id) !== 'undefined') {
+            if (!lsCache[id]) {
+              localStorage.removeItem(id)
+              lsCache[id] = true
+            }
+            let storage = JSON.parse(localStorage[id] || '[]');
+            storage.push($(x).val());
+            localStorage[id] = JSON.stringify(storage);
+            return;
+          }
+        }
+        if (x.type === 'checkbox') {
+          localStorage[x.id || x.name] = x.checked;
+        }
+        if (x.type === 'radio' && x.checked) {
+          localStorage[x.name] = $(x).val();
+        }
+      });
+    })
+
+    {
+      const lsCache = {};
+      $('input').each((_, x) => {
+        if (x.type === 'text') {
+          if (x.id) {
+            const val = localStorage[x.id];
+            if (typeof(val) !== 'undefined') $(x).val(val);
+            return;
+          }
+
+          const id = x.parentNode?.parentNode?.id;
+          if (typeof(id) !== 'undefined') {
+            const storage = lsCache[id] || (lsCache[id] = JSON.parse(localStorage[id]));
+            if (typeof(storage) !== 'undefined') {
+              $(x).val(storage.splice(0, 1));
+            }
+            return;
+          }
+        }
+        if (x.type === 'checkbox') {
+          x.checked = localStorage[x.id || x.name] === "true";
+        }
+        if (x.type === 'radio') {
+          x.checked = $(x).val() === localStorage[x.name];
+        }
+      });
+    }
+  }
 }); });
