@@ -39,12 +39,14 @@
       <div>Fuel Base Heat: <input text="text" id="fuelBaseHeat"> H/t</div>
       <div class="fuelPresets">
         <div id="fuelRadios">
+          Config:
           <label><input type="radio" name="config" value="Default"/>Default</label>
           <label><input type="radio" name="config" value="E2E"/>E2E</label>
           <label><input type="radio" name="config" value="PO3"/>PO3</label>
           <label><input type="radio" name="config" value="Custom"/>Custom</label>
-          <a href="#" onclick="event.preventDefault(); $('#uploadConfig').trigger('click');">Load Config</a>
+          (<a href="#" onclick="event.preventDefault(); $('#uploadConfig').trigger('click');">Load Config</a>)
         </div>
+        <div>Fuel:</div>
         <div id="fuels"></div>
         <details>
           <summary>Others</summary>
@@ -60,7 +62,7 @@
       <details>
         <summary><em>Help</em></summary>
         <div>
-          Expand the config for your modpack, then click on the fuel you want to use in the table above.
+          Select the config for your modpack, then click on the fuel you want to use in the table above.
           Most modpacks use the default config, except for E2E and PO3.<br />
           Alternatively, you can manually enter the fuel data in the textboxes above.
           The fuel data can be found in the tooltip of the fuel item. Do not use the data shown in JEI, they may be incorrect.<br />
@@ -89,12 +91,12 @@
             <td>&mdash;</td><td>&mdash;</td>
           </tr>
           <tr id="limit"><th>Max Allowed</th>
-            <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
-            <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
-            <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
-            <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
-            <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
-            <td><input type="text"></td><td><input type="text"></td>
+            <td><input type="text" placeholder="&infin;"></td><td><input type="text" placeholder="&infin;"></td><td><input type="text" placeholder="&infin;"></td>
+            <td><input type="text" placeholder="&infin;"></td><td><input type="text" placeholder="&infin;"></td><td><input type="text" placeholder="&infin;"></td>
+            <td><input type="text" placeholder="&infin;"></td><td><input type="text" placeholder="&infin;"></td><td><input type="text" placeholder="&infin;"></td>
+            <td><input type="text" placeholder="&infin;"></td><td><input type="text" placeholder="&infin;"></td><td><input type="text" placeholder="&infin;"></td>
+            <td><input type="text" placeholder="&infin;"></td><td><input type="text" placeholder="&infin;"></td><td><input type="text" placeholder="&infin;"></td>
+            <td><input type="text" placeholder="&infin;"></td><td><input type="text" placeholder="&infin;"></td>
           </tr>
           <tr id="activeRate"><th>Active Rate (H/t)</th>
             <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
@@ -105,11 +107,11 @@
             <td>&mdash;</td><td>&mdash;</td>
           </tr>
           <tr id="activeLimit"><th>Max Active Allowed</th>
-            <td><input type="text" value="0"></td><td><input type="text" value="0"></td><td><input type="text" value="0"></td>
-            <td><input type="text" value="0"></td><td><input type="text" value="0"></td><td><input type="text" value="0"></td>
-            <td><input type="text" value="0"></td><td><input type="text" value="0"></td><td><input type="text" value="0"></td>
-            <td><input type="text" value="0"></td><td><input type="text" value="0"></td><td><input type="text" value="0"></td>
-            <td><input type="text" value="0"></td><td><input type="text" value="0"></td><td><input type="text" value="0"></td>
+            <td><input type="text" placeholder="&infin;" value="0"></td><td><input type="text" placeholder="&infin;" value="0"></td><td><input type="text" placeholder="&infin;" value="0"></td>
+            <td><input type="text" placeholder="&infin;" value="0"></td><td><input type="text" placeholder="&infin;" value="0"></td><td><input type="text" placeholder="&infin;" value="0"></td>
+            <td><input type="text" placeholder="&infin;" value="0"></td><td><input type="text" placeholder="&infin;" value="0"></td><td><input type="text" placeholder="&infin;" value="0"></td>
+            <td><input type="text" placeholder="&infin;" value="0"></td><td><input type="text" placeholder="&infin;" value="0"></td><td><input type="text" placeholder="&infin;" value="0"></td>
+            <td><input type="text" placeholder="&infin;" value="0"></td><td><input type="text" placeholder="&infin;" value="0"></td><td><input type="text" placeholder="&infin;" value="0"></td>
             <td>&mdash;</td><td>&mdash;</td>
           </tr>
         </tbody>
@@ -117,8 +119,9 @@
       <details>
         <summary><em>Help</em></summary>
         <div>
-          If you want to limit the usage of a type of block, enter the maximum number allowed in the table below.<br />
-          Enter zero to completely disable that block. You can hover over the acronym to see the full name of each block.<br />
+          If you want to limit the usage of a type of block, enter the maximum number allowed in the table.<br />
+          Leave it blank to allow unlimited. Enter zero to completely disable that block.<br />
+          You can hover over the acronym to see the full name of each block.<br />
           Active coolers are disabled by default. You can enable them by removing the zeros.
         </div>
       </details>
@@ -129,8 +132,9 @@
             <a href="javascript:;" id="DefRate">Default</a> |
             <a href="javascript:;" id="E2ERate">E2E</a> |
             <a href="javascript:;" id="PO3Rate">PO3</a> |
-            <a href="javascript:;" id="CustomRate">Custom</a></li>
-          <li>Load NC config file: <input type="file" id="uploadConfig" accept=".cfg,*.*" /></li>
+            <a href="javascript:;" id="CustomRate">Custom</a>
+            (<a href="#" onclick="event.preventDefault(); $('#uploadConfig').trigger('click');">Load Config</a>)
+          </li>
           <li>Alternatively, you can enter the data yourself. Passive cooling rates are in the tooltip of each cooler item. Active cooling rates are in JEI.</li>
         </ul>
       </div>
@@ -163,6 +167,9 @@
         </details>
         <div>
           <span style="color:red;">Note: in Chrome, this tab won't run in background! If you want to switch to other tabs, drag this tab out as a dedicated window and don't minimize it.</span>
+        </div>
+        <div class="hidden">
+          <input type="file" id="uploadConfig" accept=".cfg,*.*" />
         </div>
       </div>
     </form>

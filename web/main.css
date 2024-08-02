@@ -53,6 +53,23 @@ input {
   text-align: center;
 }
 
+input[type=text] {
+  background-color: #333;
+  color: #eee;
+  border: 0px;
+}
+
+input[type=text]::placeholder {
+  color: #eee;
+  font-size: 150%;
+}
+
+input[type=text]:focus::placeholder {
+  color: #333;
+  display: none;
+}
+
+
 details > div {
   border: 1px solid #aaa;
   width: 60%;
@@ -62,6 +79,10 @@ details > div {
 
 main>* {
   margin-top: 0.3em;
+}
+
+.hidden {
+  display: none;
 }
 
 .step {
@@ -179,6 +200,17 @@ main>* {
   height: 20em;
   overflow-y: auto;
   border: 1px solid #aaa;
+  line-height: 1.5em;
+}
+
+#fuels table {
+  border-spacing: 0px;
+  background: #333;
+}
+
+#fuels td {
+  padding: 0em 0.5em;
+  text-align: left;
 }
 
 #otherFuels {
