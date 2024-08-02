@@ -558,10 +558,24 @@ $(() => { FissionOpt().then((FissionOpt) => {
       if (x.type === 'radio') $(x).val(['0'])
     });
     loadRatePreset(ratePreset.Def);
-  })
+  });
 
-  if (typeof(Storage) !== 'undefined') {
-    window.addEventListener('beforeunload', (event) => {
+  function uploadConfigChanged(event) {
+    const file = event.target.files[0];
+    configManager.loadConfigFile(file).then(() => {
+      loadFuels(fuelPresets.Custom);
+    });
+  }
+  $('#uploadConfig').on('change', uploadConfigChanged);
+
+  function uploadConfigCanceled(event) {
+    $('form')[0]['config'].value = lastConfig;
+  }
+  $('#uploadConfig').on('cancel', uploadConfigCanceled);
+
+  const configManager = (function() {
+
+    function saveFormState() {
       const lsCache = {};
       $('input').each((_, x) => {
         if (x.type === 'text') {
@@ -589,9 +603,9 @@ $(() => { FissionOpt().then((FissionOpt) => {
           localStorage[x.name] = $(x).val();
         }
       });
-    })
+    }
 
-    {
+    function loadFormState() {
       const lsCache = {};
       $('input').each((_, x) => {
         if (x.type === 'text') {
@@ -620,27 +634,14 @@ $(() => { FissionOpt().then((FissionOpt) => {
       });
     }
 
-    function uploadConfigChanged(event) {
-      const file = event.target.files[0];
-      loadConfigFile(file).then(() => {
-        loadFuels(fuelPresets.Custom);
-      });
-    }
-    $('#uploadConfig').on('change', uploadConfigChanged);
-
-    function uploadConfigCanceled(event) {
-      $('form')[0]['config'].value = lastConfig;
-    }
-    $('#uploadConfig').on('cancel', uploadConfigCanceled);
-
-    async function loadConfigFile(file) {
+    async function readConfigFile(file) {
       const config = {};
       let lastField;
       let fieldValues;
-      for await (let line of readConfigFile(file)) {
+      for await (let line of lines(file)) {
         processLine(line);
       }
-      loadConfig(config);
+      return config;
 
       function processLine(line) {
         if (lastField) {
@@ -664,6 +665,36 @@ $(() => { FissionOpt().then((FissionOpt) => {
           lastField = matches[1];
           fieldValues = [];
           return;
+        }
+      }
+
+      async function* lines(file) {
+        const utf8Decoder = new TextDecoder("utf-8");
+        let reader = file.stream().getReader();
+        let { value: chunk, done: readerDone } = await reader.read();
+        chunk = chunk ? utf8Decoder.decode(chunk, { stream: true }) : "";
+      
+        let re = /\r\n|\n|\r/gm;
+        let startIndex = 0;
+      
+        for (;;) {
+          let result = re.exec(chunk);
+          if (!result) {
+            if (readerDone) {
+              break;
+            }
+            let remainder = chunk.substr(startIndex);
+            ({ value: chunk, done: readerDone } = await reader.read());
+            chunk = remainder + (chunk ? utf8Decoder.decode(chunk, { stream: true }) : "");
+            startIndex = re.lastIndex = 0;
+            continue;
+          }
+          yield chunk.substring(startIndex, result.index);
+          startIndex = re.lastIndex;
+        }
+        if (startIndex < chunk.length) {
+          // last line didn't end in a newline char
+          yield chunk.substr(startIndex);
         }
       }
     }
@@ -717,9 +748,10 @@ $(() => { FissionOpt().then((FissionOpt) => {
         for (let [iAttr, attr] of Object.entries(['_power', '_heat_generation'])) {
           const k = 'fission_' + ncFuelName + attr;
           if (config[k]) {
-            for (let [i, v] of Object.entries(config[k])) {
-              if (!customFuels[ncFuelMats[i]]) customFuels[ncFuelMats[i]] = [];
-              customFuels[ncFuelMats[i]][iAttr] = v;
+            for (let [index, value] of Object.entries(config[k])) {
+              const mat = ncFuelMats[index];
+              if (!customFuels[mat]) customFuels[mat] = [];
+              customFuels[mat][iAttr] = value;
             }
           }
         }
@@ -727,37 +759,16 @@ $(() => { FissionOpt().then((FissionOpt) => {
       localStorage.customFuels = JSON.stringify(customFuels);
       fuelPresets.Custom = customFuels;
     }
-    fuelPresets.Custom = JSON.parse(localStorage.customFuels || 'null');
 
-    async function* readConfigFile(file) {
-      const utf8Decoder = new TextDecoder("utf-8");
-      let reader = file.stream().getReader();
-      let { value: chunk, done: readerDone } = await reader.read();
-      chunk = chunk ? utf8Decoder.decode(chunk, { stream: true }) : "";
-    
-      let re = /\r\n|\n|\r/gm;
-      let startIndex = 0;
-    
-      for (;;) {
-        let result = re.exec(chunk);
-        if (!result) {
-          if (readerDone) {
-            break;
-          }
-          let remainder = chunk.substr(startIndex);
-          ({ value: chunk, done: readerDone } = await reader.read());
-          chunk = remainder + (chunk ? utf8Decoder.decode(chunk, { stream: true }) : "");
-          startIndex = re.lastIndex = 0;
-          continue;
-        }
-        yield chunk.substring(startIndex, result.index);
-        startIndex = re.lastIndex;
-      }
-      if (startIndex < chunk.length) {
-        // last line didn't end in a newline char
-        yield chunk.substr(startIndex);
-      }
+    if (typeof(Storage) !== 'undefined') {
+      window.addEventListener('beforeunload', saveFormState);
+      loadFormState();
+      fuelPresets.Custom = JSON.parse(localStorage.customFuels || 'null');
     }
 
-  }
+    return {
+      loadConfigFile: (file) => readConfigFile(file).then(loadConfig),
+    }
+  })();
+
 }); });
