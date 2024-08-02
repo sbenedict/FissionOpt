@@ -2,7 +2,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
   const run = $('#run'), pause = $('#pause'), stop = $('#stop'), reset = $('#reset');
   let opt = null, timeout = null;
   
-  const updateDisables = () => {
+  function updateDisables() {
     $('#settings input').prop('disabled', opt !== null);
     $('#settings a')[opt === null ? 'removeClass' : 'addClass']('disabledLink');
     run[timeout === null ? 'removeClass' : 'addClass']('disabledLink');
@@ -207,7 +207,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
     },
   };
 
-  const fuelClick = (event) => {
+  function fuelClick(event) {
     event.preventDefault();
     if (opt !== null) return;
     const t = $(event.target);
@@ -215,7 +215,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
     $('#fuelBaseHeat').val(t.data('heat'));
   }
 
-  const loadFuels = (fuelsConfig) => {
+  function loadFuels(fuelsConfig) {
     const table = $('<table>');
     $('#fuels :first').remove()
     $('#fuels').append(table);
@@ -245,7 +245,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
   }
 
   let lastConfig = null;
-  const fuelRadioChanged = (event) => {
+  function fuelRadioChanged(event) {
     const value = event.target.value;
     if (value === 'Custom' && !fuelPresets.Custom) {
       $('#uploadConfig').trigger('click');
@@ -257,7 +257,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
   $('#fuelRadios input[type=radio]').on('change', fuelRadioChanged)
   $('#fuelRadios input[type=radio]').first().attr('checked', true).trigger('change');
 
-  const applyFuelFactor = (fuel, factor) => {
+  function applyFuelFactor(fuel, factor) {
     if (opt !== null)
       return;
     const f = fuelPresets.Default[fuel];
@@ -291,7 +291,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
       50, 1600, 20000, 4000, 2700, 3200, 3500, 3300, 2700, 3200, 1200, 1800, 1300, 1500, 1800
     ],
   }
-  const loadRatePreset = (preset) => {
+  function loadRatePreset(preset) {
     if (opt !== null)
       return;
     $.each(rates, (i, x) => { x.val(preset[i]); });
@@ -317,7 +317,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
     loadRates('rate', 'customRate', 1);
   });
 
-  const schedule = () => {
+  function schedule() {
     timeout = window.setTimeout(step, 0);
   };
 
@@ -338,7 +338,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
   tileSaveNames[15] = 'FuelCell';
   tileSaveNames[16] = 'Graphite';
 
-  const displayTile = (tile) => {
+  function displayTile(tile) {
     let active = false;
     if (tile >= nCoolerTypes) {
       tile -= nCoolerTypes;
@@ -355,7 +355,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
     return result;
   };
 
-  const saveTile = (tile) => {
+  function saveTile(tile) {
     if (tile >= nCoolerTypes) {
       tile -= nCoolerTypes;
       if (tile < nCoolerTypes) {
@@ -365,10 +365,10 @@ $(() => { FissionOpt().then((FissionOpt) => {
     return tileSaveNames[tile];
   };
 
-  const displaySample = (sample) => {
+  function displaySample(sample) {
     design.empty();
     let block = $('<div></div>');
-    const appendInfo = (label, value, unit) => {
+    function appendInfo(label, value, unit) {
       const row = $('<div></div>').addClass('info');
       row.append('<div>' + label + '</div>');
       row.append('<div>' + unit + '</div>');
@@ -478,13 +478,13 @@ $(() => { FissionOpt().then((FissionOpt) => {
     if (timeout !== null)
       return;
     if (opt === null) {
-      const parseSize = (x) => {
+      function parseSize(x) {
         const result = parseInt(x);
         if (!(result > 0))
           throw Error("Core size must be a positive integer");
         return result;
       };
-      const parsePositiveFloat = (name, x) => {
+      function parsePositiveFloat(name, x) {
         const result = parseFloat(x);
         if (!(result > 0))
           throw Error(name + " must be a positive number");
