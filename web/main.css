@@ -173,16 +173,23 @@ main>* {
 
 .info {
   position: relative;
+  text-align: left;
 }
 
-.info>:nth-child(1) {
-  position: absolute;
-  left: 0px;
+.info>div {
+  padding: 0em 0.25em;
 }
 
-.info>:nth-child(2) {
-  position: absolute;
-  right: 0px;
+.info>div:nth-child(1) {
+  display: inline-block;
+  width: 40%;
+  text-align: right;
+  padding: 0em 1em 0em 0.25em;
+}
+
+.info>div:nth-child(2) {
+  display: inline;
+  font-size: 80%;
 }
 
 .row {

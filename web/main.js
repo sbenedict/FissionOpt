@@ -371,8 +371,8 @@ $(() => { FissionOpt().then((FissionOpt) => {
     function appendInfo(label, value, unit) {
       const row = $('<div></div>').addClass('info');
       row.append('<div>' + label + '</div>');
+      row.append(' ' + (Math.round(value * 100) / 100).toLocaleString() + '&nbsp;');
       row.append('<div>' + unit + '</div>');
-      row.append(Math.round(value * 100) / 100);
       block.append(row);
     };
     appendInfo('Max Power', sample.getPower(), 'RF/t');
@@ -435,7 +435,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
     });
 
     block = $('<div></div>');
-    block.append('<div>Total number of blocks used</div>')
+    block.append('<div>Blocks used</div>')
     resourceMap = Object.entries(resourceMap);
     resourceMap.sort((x, y) => y[1] - x[1]);
     for (resource of resourceMap) {
