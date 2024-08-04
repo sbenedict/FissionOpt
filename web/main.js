@@ -1,6 +1,6 @@
 $(() => { FissionOpt().then((FissionOpt) => {
   const run = $('#run'), pause = $('#pause'), stop = $('#stop'), reset = $('#reset');
-  let opt = null, timeout = null;
+  let opt = null, timeout = null, initialDisplay = false;
   
   function updateDisables() {
     $('#settings input').prop('disabled', opt !== null);
@@ -255,8 +255,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
     loadFuels(fuelPresets[value]);
   }
   $('#fuelRadios input[type=radio]').on('change', fuelRadioChanged)
-  $('#fuelRadios input[type=radio]').first().attr('checked', true).trigger('change');
-
+  
   function applyFuelFactor(fuel, factor) {
     if (opt !== null)
       return;
@@ -422,6 +421,11 @@ $(() => { FissionOpt().then((FissionOpt) => {
         block.append(row);
       }
       design.append(block);
+
+      if (initialDisplay) {
+        $('main')[0].scrollIntoView(false);
+        initialDisplay = false;
+      }
     }
 
     save.removeClass('disabledLink');
@@ -522,10 +526,11 @@ $(() => { FissionOpt().then((FissionOpt) => {
         lossPlot = new Chart(lossElement[0].getContext('2d'), {
           type: 'bar',
           options: {responsive: false, animation: {duration: 0}, hover: {animationDuration: 0}, scales: {xAxes: [{display: false}]}, legend: {display: false}},
-          data: {labels: [], datasets: [{label: 'Loss', backgroundColor: 'red', data: [], categoryPercentage: 1.0, barPercentage: 1.0}]}
+          data: {labels: [], datasets: [{label: 'Loss', backgroundColor: '#aa0000', data: [], categoryPercentage: 1.0, barPercentage: 1.0}]}
         });
       }
       opt = new FissionOpt.FissionOpt(settings, useNet);
+      initialDisplay = true;
     }
     schedule();
     updateDisables();
@@ -770,5 +775,9 @@ $(() => { FissionOpt().then((FissionOpt) => {
       loadConfigFile: (file) => readConfigFile(file).then(loadConfig),
     }
   })();
+
+  if (lastConfig === null) {
+    $('#fuelRadios input[type=radio]').first().attr('checked', true).trigger('change');
+  }
 
 }); });
