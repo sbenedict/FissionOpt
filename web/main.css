@@ -10,24 +10,24 @@ body {
 }
 
 a {
-  color: cyan;
+  color: #00aaaa;
 }
 
 a:active {
-  color: lightcyan;
+  color: #00aaaa;
 }
 
 a:visited {
-  color: cyan;
+  color: #00aaaa;
 }
 
 a:hover {
-  color: cyan;
+  color: #00ffff;
 }
 
 table {
   border-spacing: 1px;
-  background-color: #aaa;
+  background-color: #ccc;
   white-space: nowrap;
 }
 
@@ -35,7 +35,7 @@ td, th {
   text-align: center;
   font-weight: normal;
   padding: 4px;
-  background-color: #333;
+  background-color: #222;
 }
 
 h2 {
@@ -133,24 +133,24 @@ main>* {
   width: 3em;
 }
 
-.Wt {color: dodgerblue;}
-.Rs {color: red;}
-.Qz {color: lightgray;}
-.Au {color: gold;}
-.Gs {color: #dc0;}
-.Lp {color: blue;}
-.Dm {color: powderblue;}
-.He {color: lightcoral;}
-.Ed {color: teal;}
-.Cr {color: deepskyBlue;}
-.Fe {color: wheat;}
-.Em {color: green;}
-.Cu {color: brown;}
-.Sn {color: lightsteelblue;}
-.Mg {color: pink;}
-.air {color: white;}
-.cell {color: gray;}
-.mod {color: black;}
+.Wt {color: #1e8fffab;}
+.Rs {color: #ff0000ab;}
+.Qz {color: #d3d3d3ab;}
+.Au {color: #ffd700ab;}
+.Gs {color: #ddcc00ab;}
+.Lp {color: #0000ffab;}
+.Dm {color: #b0e0e6ab;}
+.He {color: #f08080ab;}
+.Ed {color: #008080ab;}
+.Cr {color: #00bfffab;}
+.Fe {color: #f5deb3ab;}
+.Em {color: #008000ab;}
+.Cu {color: #a52a2aab;}
+.Sn {color: #b0c4deab;}
+.Mg {color: #ffc0cbab;}
+.air {color: #ffffffab;}
+.cell {color: #808080ab;}
+.mod {color: #808080ab;}
 
 .controls > a {
   display: inline-block;
