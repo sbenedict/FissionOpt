@@ -1,3 +1,7 @@
+:root {
+  color-scheme: dark;
+}
+
 body {
   line-height: 150%;
   font-family: sans-serif;
@@ -53,22 +57,30 @@ input {
   text-align: center;
 }
 
-input[type=text] {
-  background-color: #333;
-  color: #eee;
-  border: 0px;
-}
+/* input[type=text] {
+  color: light-dark(#545454, #aaaaaa);
+  background-color: light-dark(#efefef4d, #3b3b3b4d);
+  border-style: inset;
+  border-width: 2px;
+  border-color: light-dark(#767676, #858585);
+} */
 
 input[type=text]::placeholder {
-  color: #eee;
+  /* color: light-dark(#292929, #666); */
+  color: #666;
   font-size: 150%;
 }
 
 input[type=text]:focus::placeholder {
-  color: #333;
+  color: transparent;
   display: none;
 }
 
+.blocksTable input[type=text] {
+  border-style: none;
+  background-color: transparent;
+  padding: 3px;
+}
 
 details > div {
   border: 1px solid #aaa;
@@ -141,18 +153,18 @@ main>* {
 .mod {color: black;}
 
 .controls > a {
-  text-decoration: none;
-  color: black;
   display: inline-block;
   width: 10em;
-  border: 2px outset #ccc;
-  background: #ddd;
+  text-decoration: none;
   text-align: center;
+  color: #ccc;
+  background: #666;
+  border: 2px outset #999;
 }
 .controls > a.disabledLink {
-  color: #777;
-  background: #bbb;
-  border-color: #aaa;
+  color: #666;
+  background: #333;
+  border-color: #666;
 }
 
 #design>* {
