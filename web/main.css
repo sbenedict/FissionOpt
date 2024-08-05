@@ -1,8 +1,9 @@
 :root {
   --colors-accent: #00aaaa;
-  --colors-background-1: #222222;
+  --colors-background-1: #111111;
   --colors-background-2: hsl(from var(--colors-background-1) h s calc(l + 10));
-  --colors-foreground-1: #eeeeee;
+  --colors-foreground-1: #cccccc;
+  --colors-border-1: hsl(from var(--colors-foreground-1) h s calc(l - 10));
 
   color-scheme: dark;
   accent-color: var(--colors-accent);
@@ -33,7 +34,7 @@ a:hover {
 
 table {
   border-spacing: 1px;
-  background-color: var(--colors-foreground-1);
+  background-color: var(--colors-border-1);
   white-space: nowrap;
 }
 
@@ -61,6 +62,11 @@ li {
 
 input {
   text-align: center;
+  color: var(--colors-foreground-1);
+}
+
+:focus-visible {
+  outline: solid thin var(--colors-accent); 
 }
 
 /* input[type=text] {
@@ -83,13 +89,15 @@ input[type=text]:focus::placeholder {
 }
 
 .blocksTable input[type=text] {
+  border-color: var(--colors-border-1);
   border-style: none;
+  border-image: none;
   background-color: transparent;
   padding: 3px;
 }
 
 details > div {
-  border: 1px solid var(--colors-foreground-1);
+  border: 1px solid var(--colors-border-1);
   width: 60%;
   display: inline-block;
   padding: 0.5em;
@@ -104,7 +112,7 @@ main>* {
 }
 
 .step {
-  border-top: 2px solid var(--colors-foreground-1);
+  border-top: 2px solid var(--colors-border-1);
   margin-top: 0.5em;
   padding-top: 0.5em;
 }
@@ -175,7 +183,7 @@ main>* {
 
 .lossChart {
   width: fit-content;
-  border: 1px solid var(--colors-foreground-1);
+  border: 1px solid var(--colors-border-1);
   padding: 2px;
 }
 
@@ -183,7 +191,7 @@ main>* {
   display: inline-block;
   vertical-align: top;
   margin: 0.5em;
-  border: 1px solid var(--colors-foreground-1);
+  border: 1px solid var(--colors-border-1);
   padding: 0.5em;
   margin-bottom: 1em;
   text-align: center;
@@ -230,7 +238,7 @@ main>* {
   display: inline-block;
   height: 20em;
   overflow-y: auto;
-  border: 1px solid var(--colors-foreground-1);
+  border: 1px solid var(--colors-border-1);
   line-height: 1.5em;
 }
 
