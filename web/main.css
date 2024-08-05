@@ -1,34 +1,39 @@
 :root {
+  --colors-accent: #00aaaa;
+  --colors-background-1: #222222;
+  --colors-background-2: hsl(from var(--colors-background-1) h s calc(l + 10));
+  --colors-foreground-1: #eeeeee;
+
   color-scheme: dark;
-  accent-color: #0aa;
+  accent-color: var(--colors-accent);
 }
 
 body {
   line-height: 150%;
   font-family: sans-serif;
-  background-color: #111;
-  color: #ccc;
+  background-color: var(--colors-background-1);
+  color: var(--colors-foreground-1);
 }
 
 a {
-  color: #00aaaa;
+  color: var(--colors-accent);
 }
 
 a:active {
-  color: #00aaaa;
+  color: var(--colors-accent);
 }
 
 a:visited {
-  color: #00aaaa;
+  color: var(--colors-accent);
 }
 
 a:hover {
-  color: #00ffff;
+  color: lighten(var(--colors-accent));
 }
 
 table {
   border-spacing: 1px;
-  background-color: #ccc;
+  background-color: var(--colors-foreground-1);
   white-space: nowrap;
 }
 
@@ -36,7 +41,7 @@ td, th {
   text-align: center;
   font-weight: normal;
   padding: 4px;
-  background-color: #222;
+  background-color: var(--colors-background-2);
 }
 
 h2 {
@@ -68,7 +73,7 @@ input {
 
 input[type=text]::placeholder {
   /* color: light-dark(#292929, #666); */
-  color: #666;
+  color: hsl(from var(--colors-foreground-1) h s calc(l - 15));
   font-size: 150%;
 }
 
@@ -84,7 +89,7 @@ input[type=text]:focus::placeholder {
 }
 
 details > div {
-  border: 1px solid #aaa;
+  border: 1px solid var(--colors-foreground-1);
   width: 60%;
   display: inline-block;
   padding: 0.5em;
@@ -99,7 +104,7 @@ main>* {
 }
 
 .step {
-  border-top: 2px solid #aaa;
+  border-top: 2px solid var(--colors-foreground-1);
   margin-top: 0.5em;
   padding-top: 0.5em;
 }
@@ -158,19 +163,19 @@ main>* {
   width: 10em;
   text-decoration: none;
   text-align: center;
-  color: #ccc;
-  background: #666;
-  border: 2px outset #999;
+  color: var(--colors-foreground-1);
+  background: hsl(from var(--colors-background-2) h s calc(l + 15));
+  border: 2px outset hsl(from var(--colors-background-2) h s calc(l + 30));
 }
 .controls > a.disabledLink {
-  color: #666;
-  background: #333;
-  border-color: #666;
+  color: hsl(from var(--colors-foreground-1) h s calc(l - 30));
+  background: hsl(from var(--colors-background-2) h s calc(l - 15));
+  border-color: hsl(from var(--colors-background-2) h s calc(l - 0));
 }
 
 .lossChart {
   width: fit-content;
-  border: 1px solid #aaa;
+  border: 1px solid var(--colors-foreground-1);
   padding: 2px;
 }
 
@@ -178,12 +183,12 @@ main>* {
   display: inline-block;
   vertical-align: top;
   margin: 0.5em;
-  border: 1px solid #aaa;
+  border: 1px solid var(--colors-foreground-1);
   padding: 0.5em;
   margin-bottom: 1em;
   text-align: center;
   font-family: sans-serif;
-  background-color: #333;
+  background-color: var(--colors-background-2);
 }
 
 #design>:first-child {
@@ -218,20 +223,20 @@ main>* {
 }
 
 .active-cooler {
-  outline: 2px dashed #aaa;
+  outline: 2px dashed var(--colors-foreground-1);
 }
 
 #fuels {
   display: inline-block;
   height: 20em;
   overflow-y: auto;
-  border: 1px solid #aaa;
+  border: 1px solid var(--colors-foreground-1);
   line-height: 1.5em;
 }
 
 #fuels table {
   border-spacing: 0px;
-  background: #222;
+  background: var(--colors-background-2);
 }
 
 #fuels td {
