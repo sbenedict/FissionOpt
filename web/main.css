@@ -134,24 +134,24 @@ main>* {
   width: 3em;
 }
 
-.Wt {color: #1e8fffab;}
-.Rs {color: #ff0000ab;}
-.Qz {color: #d3d3d3ab;}
-.Au {color: #ffd700ab;}
-.Gs {color: #ddcc00ab;}
-.Lp {color: #0000ffab;}
-.Dm {color: #b0e0e6ab;}
-.He {color: #f08080ab;}
-.Ed {color: #008080ab;}
-.Cr {color: #00bfffab;}
-.Fe {color: #f5deb3ab;}
-.Em {color: #008000ab;}
-.Cu {color: #a52a2aab;}
-.Sn {color: #b0c4deab;}
-.Mg {color: #ffc0cbab;}
-.air {color: #ffffffab;}
-.cell {color: #808080ab;}
-.mod {color: #808080ab;}
+.Wt {color: #1e8fffdd;}
+.Rs {color: #ff0000dd;}
+.Qz {color: #d3d3d3dd;}
+.Au {color: #ffd700dd;}
+.Gs {color: #ddcc00dd;}
+.Lp {color: #0000ffdd;}
+.Dm {color: #b0e0e6dd;}
+.He {color: #f08080dd;}
+.Ed {color: #008080dd;}
+.Cr {color: #00bfffdd;}
+.Fe {color: #f5deb3dd;}
+.Em {color: #008000dd;}
+.Cu {color: #a52a2add;}
+.Sn {color: #b0c4dedd;}
+.Mg {color: #ffc0cbdd;}
+.air {color: #ffffffdd;}
+.cell {color: #808080dd;}
+.mod {color: #808080dd;}
 
 .controls > a {
   display: inline-block;
