@@ -522,8 +522,9 @@ $(() => { FissionOpt().then((FissionOpt) => {
         lossElement.remove();
       const useNet = $('#useNet').is(':checked');
       if (useNet) {
-        lossElement = $('<canvas></canvas>').attr('width', 1024).attr('height', 128).insertAfter(progress);
-        lossPlot = new Chart(lossElement[0].getContext('2d'), {
+        lossElement = $('<div>').addClass('lossChart').insertAfter(progress);
+        let lossCanvas = $('<canvas></canvas>').attr('width', 1024).attr('height', 128).appendTo(lossElement)[0];
+        lossPlot = new Chart(lossCanvas.getContext('2d'), {
           type: 'bar',
           options: {responsive: false, animation: {duration: 0}, hover: {animationDuration: 0}, scales: {xAxes: [{display: false}]}, legend: {display: false}},
           data: {labels: [], datasets: [{label: 'Loss', backgroundColor: '#aa0000', data: [], categoryPercentage: 1.0, barPercentage: 1.0}]}
