@@ -38,7 +38,7 @@ jobs:
     - name: Debug
       working-directory: ./web
       run: >
-        dir ../lib/include
+        get-childitem ../lib
 
     - name: Build
       working-directory: ./web
