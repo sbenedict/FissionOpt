@@ -48,4 +48,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dist
-        path: web
+        path: |
+          web
+          !web/compile.bat
+          !web/*.cpp
