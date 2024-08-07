@@ -15,7 +15,8 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout source
+      uses: actions/checkout@v4
 
     - name: Setup Emscripten SDK cache
       uses: actions/cache@v2
@@ -44,7 +45,7 @@ jobs:
         sparse-checkout: include/xtl
         sparse-checkout-cone-mode: false
 
-    - name: Build
+    - name: Build with Emscripten
       working-directory: ./web
       run: >
         em++ --bind -s MODULARIZE=1 -s EXPORT_NAME=FissionOpt -s ALLOW_MEMORY_GROWTH=1
@@ -53,7 +54,7 @@ jobs:
         ../OverhaulFission.cpp ../OptOverhaulFission.cpp ../OverhaulFissionNet.cpp
         -I../lib/xtensor/include -I../lib/xtl/include
 
-    - name: Archive
+    - name: Archive web distribution
       uses: actions/upload-artifact@v4
       with:
         name: dist
