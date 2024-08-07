@@ -1,6 +1,26 @@
 $(() => { FissionOpt().then((FissionOpt) => {
   const run = $('#run'), pause = $('#pause'), stop = $('#stop'), reset = $('#reset');
   let opt = null, timeout = null, initialDisplay = false;
+  let history = new (function() {
+    const self = this;
+    self.samples = {};
+    self.keys = [];
+    self.current = null;
+    self.add = function(sample) {
+      self.samples[sample.key] = sample;
+      self.keys.push(sample.key);
+      self.added.forEach((x) => x(self, sample));
+    };
+    self.added = [];
+    self.clear = function() {
+      self.samples = {};
+      self.keys = [];
+      self.current = null;
+      self.cleared.forEach((x) => x(self, null));
+    };
+    self.cleared = [];
+    return self;
+  });
   
   function updateDisables() {
     $('#settings input').prop('disabled', opt !== null);
@@ -364,7 +384,63 @@ $(() => { FissionOpt().then((FissionOpt) => {
     return tileSaveNames[tile];
   };
 
-  function displaySample(sample) {
+  const historySelect = $('#history select').first();
+  historySelect[0].options.add(new Option('Last'));
+
+  history.added.push(function(self, sample) {
+    historySelect[0].options.add(new Option(sample.key, sample.key));
+  });
+
+  history.cleared.push(function(self, _) {
+    $('option:not(:first)', historySelect).remove();
+  });
+
+  historySelect.on('change', function(event) {
+    const key = event.target.value;
+    if (key === "Last") {
+      history.current = null;
+      renderSample(history.samples[history.keys[history.keys.length - 1]]);
+      return;
+    }
+    history.current = key;
+    renderSample(history.samples[key]);
+  });
+
+  function parseSample(opt) {
+    const sample = opt.getBest();
+    const n = {
+      ep: opt.getNEpisode(),
+      stage: opt.getNStage(),
+      iter: opt.getNIteration(),
+    };
+    return {
+      key: `${n.ep}/${n.stage}/${n.iter}`,
+      ep: n.ep,
+      stage: n.stage,
+      iter: n.iter,
+      power: sample.getPower(),
+      heat: sample.getHeat(),
+      cooling: sample.getCooling(),
+      netHeat: sample.getNetHeat(),
+      dutyCycle: sample.getDutyCycle(),
+      avgBreed: sample.getAvgBreed(),
+      efficiency: sample.getEfficiency(),
+      avgPower: sample.getAvgPower(),
+      data: sample.getData(),
+      shapes: [0,1,2].map((i) => sample.getShape(i)),
+      strides: [0,1,2].map((i) => sample.getStride(i)),
+    };
+  }
+  
+  function displaySample(opt) {
+    const sample = parseSample(opt);
+    history.add(sample);
+    if (history.current === null) {
+      renderSample(sample);
+    }
+  }
+
+  function renderSample(sample) {
     design.empty();
     let block = $('<div></div>');
     function appendInfo(label, value, unit) {
@@ -374,21 +450,17 @@ $(() => { FissionOpt().then((FissionOpt) => {
       row.append('<div>' + unit + '</div>');
       block.append(row);
     };
-    appendInfo('Max Power', sample.getPower(), 'RF/t');
-    appendInfo('Heat', sample.getHeat(), 'H/t');
-    appendInfo('Cooling', sample.getCooling(), 'H/t');
-    appendInfo('Net Heat', sample.getNetHeat(), 'H/t');
-    appendInfo('Duty Cycle', sample.getDutyCycle() * 100, '%');
-    appendInfo('Fuel Use Rate', sample.getAvgBreed(), '&times;');
-    appendInfo('Efficiency', sample.getEfficiency() * 100, '%');
-    appendInfo('Avg Power', sample.getAvgPower(), 'RF/t');
+    appendInfo('Max Power', sample.power, 'RF/t');
+    appendInfo('Heat', sample.heat, 'H/t');
+    appendInfo('Cooling', sample.cooling, 'H/t');
+    appendInfo('Net Heat', sample.netHeat, 'H/t');
+    appendInfo('Duty Cycle', sample.dutyCycle * 100, '%');
+    appendInfo('Fuel Use Rate', sample.avgBreed, '&times;');
+    appendInfo('Efficiency', sample.efficiency * 100, '%');
+    appendInfo('Avg Power', sample.avgPower, 'RF/t');
     design.append(block);
 
-    const shapes = [], strides = [], data = sample.getData();
-    for (let i = 0; i < 3; ++i) {
-      shapes.push(sample.getShape(i));
-      strides.push(sample.getStride(i));
-    }
+    const { shapes, strides, data } = sample;
     let resourceMap = {};
     const saved = {
       UsedFuel: {name: '', FuelTime: 0.0, BasePower: settings.fuelBasePower, BaseHeat: settings.fuelBaseHeat},
@@ -468,7 +540,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
     else
       progress.text('Episode ' + opt.getNEpisode() + ', stage ' + nStage + ', iteration ' + opt.getNIteration());
     if (opt.needsRedrawBest())
-      displaySample(opt.getBest());
+      displaySample(opt);
     if (opt.needsReplotLoss()) {
       const data = opt.getLossHistory();
       while (lossPlot.data.labels.length < data.length)
@@ -540,6 +612,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
         });
       }
       opt = new FissionOpt.FissionOpt(settings, useNet);
+      history.clear();
       initialDisplay = true;
     }
     schedule();
