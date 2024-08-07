@@ -16,6 +16,8 @@ jobs:
 
     - name: Setup Emscripten toolchain
       uses: mymindstorm/setup-emsdk@v14
+      with:
+        actions-cache-folder: 'emsdk-cache'
 
     - name: Download xtensor
       uses: actions/checkout@v4
