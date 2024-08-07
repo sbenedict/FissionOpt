@@ -19,19 +19,19 @@ jobs:
 
     - name: Download xtensor
       uses: actions/checkout@v4
-        with:
-          repository: xtensor-stack/xtensor
-          path: 'include/xtensor'
-          sparse-checkout: 'include/xtensor'
-          sparse-checkout-cone-mode: false
+      with:
+        repository: xtensor-stack/xtensor
+        path: 'include/xtensor'
+        sparse-checkout: 'include/xtensor'
+        sparse-checkout-cone-mode: false
 
     - name: Download xtl
       uses: actions/checkout@v4
-        with:
-          repository: xtensor-stack/xtl
-          path: 'include/xlt'
-          sparse-checkout: 'include/xlt'
-          sparse-checkout-cone-mode: false
+      with:
+        repository: xtensor-stack/xtl
+        path: 'include/xlt'
+        sparse-checkout: 'include/xlt'
+        sparse-checkout-cone-mode: false
 
     - name: Build
       working-directory: ./web
