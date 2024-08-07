@@ -7,6 +7,9 @@ on:
 #  pull_request:
 #    branches: [ "master" ]
 
+env:
+  EM_CACHE_FOLDER: emsdk-cache
+
 jobs:
   build:
     runs-on: windows-latest
@@ -14,33 +17,39 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Emscripten toolchain
+    - name: Setup Emscripten SDK cache
+      uses: actions/cache@v2
+      with:
+        path: ${{env.EM_CACHE_FOLDER}}
+        key: emsdk-${{ runner.os }}
+
+    - name: Setup Emscripten SDK
       uses: mymindstorm/setup-emsdk@v14
       with:
-        actions-cache-folder: 'emsdk-cache'
+        actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
 
     - name: Download xtensor
       uses: actions/checkout@v4
       with:
         repository: xtensor-stack/xtensor
-        path: 'lib/xtensor'
-        sparse-checkout: 'include/xtensor'
+        path: lib/xtensor
+        sparse-checkout: include/xtensor
         sparse-checkout-cone-mode: false
 
     - name: Download xtl
       uses: actions/checkout@v4
       with:
         repository: xtensor-stack/xtl
-        path: 'lib/xtl'
-        sparse-checkout: 'include/xtl'
+        path: lib/xtl
+        sparse-checkout: include/xtl
         sparse-checkout-cone-mode: false
 
     - name: Build
       working-directory: ./web
       run: >
         em++ --bind -s MODULARIZE=1 -s EXPORT_NAME=FissionOpt -s ALLOW_MEMORY_GROWTH=1
-        -o FissionOpt.js -std=c++17 -flto -O3
-        Bindings.cpp ../Fission.cpp ../OptFission.cpp ../FissionNet.cpp
+        -o FissionOpt.js -std=c++17 -flto -O3 Bindings.cpp
+        ../Fission.cpp ../OptFission.cpp ../FissionNet.cpp
         ../OverhaulFission.cpp ../OptOverhaulFission.cpp ../OverhaulFissionNet.cpp
         -I../lib/xtensor/include -I../lib/xtl/include
 
