@@ -16,7 +16,23 @@ jobs:
 
     - name: Setup Emscripten toolchain
       uses: mymindstorm/setup-emsdk@v14
-              
+
+    - name: Download xtensor
+      uses: actions/checkout@v4
+        with:
+          repository: xtensor-stack/xtensor
+          path: 'include/xtensor'
+          sparse-checkout: 'include/xtensor'
+          sparse-checkout-cone-mode: false
+
+    - name: Download xtl
+      uses: actions/checkout@v4
+        with:
+          repository: xtensor-stack/xtl
+          path: 'include/xlt'
+          sparse-checkout: 'include/xlt'
+          sparse-checkout-cone-mode: false
+
     - name: Build
       working-directory: ./web
       run: >
@@ -24,4 +40,4 @@ jobs:
         -o FissionOpt.js -std=c++17 -flto -O3
         Bindings.cpp ../Fission.cpp ../OptFission.cpp ../FissionNet.cpp
         ../OverhaulFission.cpp ../OptOverhaulFission.cpp ../OverhaulFissionNet.cpp
-      # -I../../xtl/include -I../../xtensor/include
+        -I../include
