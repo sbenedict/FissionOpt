@@ -35,11 +35,6 @@ jobs:
         sparse-checkout: 'include/xtl'
         sparse-checkout-cone-mode: false
 
-    - name: Debug
-      working-directory: ./web
-      run: >
-        get-childitem ../lib
-
     - name: Build
       working-directory: ./web
       run: >
@@ -48,3 +43,9 @@ jobs:
         Bindings.cpp ../Fission.cpp ../OptFission.cpp ../FissionNet.cpp
         ../OverhaulFission.cpp ../OptOverhaulFission.cpp ../OverhaulFissionNet.cpp
         -I../lib/xtensor/include -I../lib/xtl/include
+
+    - name: Archive
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: web
