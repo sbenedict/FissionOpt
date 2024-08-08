@@ -426,7 +426,7 @@ $(() => { FissionOpt().then((FissionOpt) => {
       avgBreed: sample.getAvgBreed(),
       efficiency: sample.getEfficiency(),
       avgPower: sample.getAvgPower(),
-      data: sample.getData(),
+      data: Array.from(sample.getData()),
       shapes: [0,1,2].map((i) => sample.getShape(i)),
       strides: [0,1,2].map((i) => sample.getStride(i)),
     };
