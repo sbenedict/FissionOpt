@@ -1,17 +1,22 @@
 name: Build with Emscripten
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      deploy:
+        type: boolean
+        description: Publish to website
+        default: false
 #  push:
 #    branches: [ "master" ]
 #  pull_request:
 #    branches: [ "master" ]
 
-inputs:
-  deploy:
-    description: 'If true then the output is published to the website.'
-    required: false
-    default: 'false'
+# inputs:
+#   deploy:
+#     description: 'If true then the output is published to the website.'
+#     required: false
+#     default: 'false'
 
 env:
   EM_VERSION: 3.1.64
@@ -78,7 +83,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    if: inputs.deploy != 'false'
+    if: github.event.inputs.deploy == 'true'
     needs: build
     steps:
       - name: Deploy to GitHub Pages
