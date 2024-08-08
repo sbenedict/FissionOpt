@@ -7,6 +7,12 @@ on:
 #  pull_request:
 #    branches: [ "master" ]
 
+inputs:
+  deploy:
+    description: 'If true then the output is published to the website.'
+    required: false
+    default: 'false'
+
 env:
   EM_VERSION: 3.1.64
   EM_CACHE_FOLDER: emsdk-cache
@@ -66,3 +72,19 @@ jobs:
           web
           !web/compile.bat
           !web/*.cpp
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    if: inputs.deploy != 'false'
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: dist
+      - run: >
+        echo "Published to: ${url}"
