@@ -92,4 +92,4 @@ jobs:
         with:
           artifact_name: dist
       - run: >
-        echo "Published to: ${url}"
+          echo "Published to: ${url}"
