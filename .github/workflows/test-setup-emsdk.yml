@@ -1,0 +1,59 @@
+name: Test setup-emsdk workflow
+
+on:
+  workflow_dispatch:
+
+env:
+  EM_VERSION: 3.1.64
+  EM_CACHE_FOLDER: emsdk-cache
+
+jobs:
+  restore-cached-emsdk:
+    runs-on: windows-latest
+    outputs:
+      cache-hit: ${{ steps.cache-emsdk.outputs.cache-hit }}
+      cache-primary-key: ${{ steps.cache-emsdk.outputs.cache-primary-key }}
+      cache-matched-key: ${{ steps.cache-emsdk.outputs.cache-matched-key }}
+    steps:
+    - name: Setup Emscripten SDK cache
+      id: cache-emsdk
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ env.EM_CACHE_FOLDER }}
+        key: ${{ runner.os }}-${{ runner.arch }}-emsdk-${{ env.EM_VERSION }}
+
+  setup-emsdk:
+    uses: ./.github/workflows/setup-emsdk.yml
+    needs: [ restore-cached-emsdk ]
+    if: ${{ needs.restore-cached-emsdk.outputs.cache-hit != 'true' }}
+    with:
+        version: 3.1.64
+        path: emsdk-cache
+
+  build:
+    runs-on: windows-latest
+    needs: [ setup-emsdk ]
+
+    steps:
+    - name: printenv
+      run: printenv
+
+    - name: .em-env
+      run: cat .em-env
+
+    - name: emsdk-main
+      run: >
+        [ -d "$EMSDK/emsdk-main" ]
+        && echo 'Found emsdk-main'
+        || echo 'Missing emsdk-main'
+
+  cache-emsdk:
+    runs-on: windows-latest
+    needs: [ restore-cached-emsdk, build ]
+    if: ${{ needs.restore-cached-emsdk.outputs.cache-hit == 'true' }}
+
+    steps:
+    - name: Save Emscripten SDK cache
+      uses: actions/cache/save@v4
+      with:
+        key: ${{ needs.restore-cached-emsdk.outputs.cache-primary-key }}

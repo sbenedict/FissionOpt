@@ -1,0 +1,103 @@
+name: Setup Emscripten toolchain
+run-name: Setup Emscripten toolchain v${{ inputs.version }}
+# description: Download emsdk and optionally install a version of Emscripten
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: Version to install
+        type: string
+        default: latest
+      path:
+        description: Install target folder name. Defaults to 'emsdk-cache'.
+        type: string
+        default: emsdk-cache
+      no-download:
+        description: If true will use existing toolchain files and not download any version of EMSDK. emsdk will still be added to PATH.
+        type: boolean
+        default: false
+      no-install:
+        description: If true will not download any version of Emscripten. emsdk will still be added to PATH.
+        type: boolean
+        default: false
+      update:
+        description: Fetch package information for all the new tools and SDK versions
+        type: boolean
+        default: false
+
+env:
+  EM_VERSION: ${{ inputs.version }}
+  EM_PATH: ${{ inputs.path }}
+
+jobs:
+  main:
+    runs-on: windows-latest
+    outputs:
+      em-env: ${{ steps.output-env.outputs.em-env }}
+        
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Snapshot env
+      run: printenv > ./.em-init-env
+    - name: Download EMSDK
+      if: (!inputs.no-download)
+      run: |
+        curl -L -s -o emsdk-main.zip https://github.com/emscripten-core/emsdk/archive/main.zip
+        unzip -d "$EM_PATH/" emsdk-main.zip
+        rm emsdk-main.zip
+        echo "EMSDK=$GITHUB_WORKSPACE/$EM_PATH/emsdk-main" >> "$GITHUB_ENV"
+    - name: Set EMSDK
+      if: inputs.no-download
+      run: |
+        if ! [ -d "$GITHUB_WORKSPACE/$EM_PATH/emsdk-main" ]; then echo "::error ::Missing \"$GITHUB_WORKSPACE/$EM_PATH/emsdk-main/\""; exit 1; fi
+        echo "EMSDK=$GITHUB_WORKSPACE/$EM_PATH/emsdk-main" >> "$GITHUB_ENV"
+
+    - name: Set EMSDK_CMD
+      if: runner.os == 'Windows'
+      run: echo "EMSDK_CMD=powershell $EMSDK/emsdk.ps1" >> "$GITHUB_ENV"
+    - name: Set EMSDK_CMD
+      if: runner.os != 'Windows'
+      run: echo "EMSDK_CMD=$EMSDK/emsdk" >> "$GITHUB_ENV"
+
+    - name: Add EMSDK to path
+      if: inputs.no-install
+      run: echo "$EMSDK" >> "$GITHUB_PATH"
+
+    - name: emsdk update
+      if: (!inputs.no-install && !inputs.no-download && inputs.update)
+      run: >
+        "$EMSDK_CMD" update
+
+    - name: emsdk install ${{ env.EM_VERSION }}
+      if: (!inputs.no-install && !inputs.no-download)
+      run: >
+        "$EMSDK_CMD" install "$EM_VERSION"
+
+    - name: emsdk activate ${{ env.EM_VERSION }}
+      if: (!inputs.no-install)
+      run: >
+        "$EMSDK_CMD" activate "$EM_VERSION"
+
+    - name: emsdk construct_env
+      if: (!inputs.no-install)
+      run: >
+        "$EMSDK_CMD" construct_env 2>&1
+        | grep ' = '
+        | sed 's/ = /=/'
+        >> "$GITHUB_ENV"
+
+    - name: Debug
+      if: true
+      run: printenv | grep -wvFf .em-init-env -
+
+    - name: Output
+      id: output-env
+      run: |
+        em_env=`printenv | grep -wvFf .em-init-env -`
+        rm .em-init-env
+        echo "em-env=\"$em_env\"" > .em-env
+        cat .em-env >> "$GITHUB_OUTPUT"
