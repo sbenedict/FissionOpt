@@ -58,7 +58,7 @@ jobs:
 
     - name: Set EMSDK_CMD
       if: runner.os == 'Windows'
-      run: echo "EMSDK_CMD=powershell \"$EMSDK/emsdk.ps1\"" >> "$GITHUB_ENV"
+      run: echo "EMSDK_CMD=powershell $EMSDK/emsdk.ps1" >> "$GITHUB_ENV"
     - name: Set EMSDK_CMD
       if: runner.os != 'Windows'
       run: echo "EMSDK_CMD=$EMSDK/emsdk" >> "$GITHUB_ENV"
