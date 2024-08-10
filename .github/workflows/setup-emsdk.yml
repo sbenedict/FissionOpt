@@ -58,7 +58,7 @@ jobs:
 
     - name: Set EMSDK_CMD
       if: runner.os == 'Windows'
-      run: echo "EMSDK_CMD=powershell $EMSDK/emsdk.ps1" >> "$GITHUB_ENV"
+      run: echo "EMSDK_CMD=powershell \"$EMSDK/emsdk.ps1\"" >> "$GITHUB_ENV"
     - name: Set EMSDK_CMD
       if: runner.os != 'Windows'
       run: echo "EMSDK_CMD=$EMSDK/emsdk" >> "$GITHUB_ENV"
@@ -70,22 +70,22 @@ jobs:
     - name: emsdk update
       if: (!inputs.no-install && !inputs.no-download && inputs.update)
       run: >
-        "$EMSDK_CMD" update
+        $EMSDK_CMD update
 
     - name: emsdk install ${{ env.EM_VERSION }}
       if: (!inputs.no-install && !inputs.no-download)
       run: >
-        "$EMSDK_CMD" install "$EM_VERSION"
+        $EMSDK_CMD install "$EM_VERSION"
 
     - name: emsdk activate ${{ env.EM_VERSION }}
       if: (!inputs.no-install)
       run: >
-        "$EMSDK_CMD" activate "$EM_VERSION"
+        $EMSDK_CMD activate "$EM_VERSION"
 
     - name: emsdk construct_env
       if: (!inputs.no-install)
       run: >
-        "$EMSDK_CMD" construct_env 2>&1
+        $EMSDK_CMD construct_env 2>&1
         | grep ' = '
         | sed 's/ = /=/'
         >> "$GITHUB_ENV"
